@@ -3,7 +3,7 @@ import { Layers, Globe } from 'lucide-react';
 
 const MapLayerToggle = ({ currentLayer, onToggle }) => {
     return (
-        <div className="flex bg-space-950/80 backdrop-blur-md border border-white/10 rounded-xl p-1 shadow-lg pointer-events-auto">
+        <div className="flex bg-slate-900 rounded-lg p-1 shadow-xl shadow-black/20 pointer-events-auto h-11 items-center">
             <button
                 onClick={() => onToggle('satellite')}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-300 ${currentLayer === 'satellite'

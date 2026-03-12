@@ -1,5 +1,11 @@
 from flask import Flask
 from flask_cors import CORS
+import sys
+import os
+
+# Ensure the backend directory is in the sys.path so our submodules can be imported
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from routes.analyze import analyze_bp
 
 def create_app():

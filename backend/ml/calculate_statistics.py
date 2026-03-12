@@ -1,30 +1,33 @@
 import numpy as np
+from config.settings import CLASSES
 
-def calculate_land_cover_stats(mask_data=None):
+def calculate_land_percentages(mask_tensor):
     """
-    Calculates percentage distribution and dominant class.
-    """
-    # If no real mask is provided, generate random realistic stats
-    if mask_data is None:
-        stats = {
-            "Forest": round(30 + np.random.uniform(5, 15), 1),
-            "Urban": round(15 + np.random.uniform(0, 10), 1),
-            "Water": round(5 + np.random.uniform(0, 5), 1),
-            "Agriculture": round(20 + np.random.uniform(5, 10), 1),
-            "Barren": round(10 + np.random.uniform(0, 5), 1)
-        }
-    else:
-        # In real scenario, count pixels in mask_data
-        unique, counts = np.unique(mask_data, return_counts=True)
-        total = counts.sum()
-        # Map IDs to names...
-        stats = {} # ...
-        
-    dominant = max(stats, key=stats.get)
-    confidence = round(85 + np.random.uniform(5, 10), 1)
+    Given a PyTorch tensor mask [H, W] of class predictions:
+    1. Count total pixels.
+    2. Count pixels for each distinct class (0 through 5).
+    3. Calculate percentage of each class.
     
-    return {
-        "stats": stats,
-        "dominant_class": dominant,
-        "confidence": confidence
-    }
+    Returns a dictionary of percentages keyed by class name.
+    """
+    # Convert PyTorch tensor back to a 1D numpy array for easy counting
+    mask = mask_tensor.cpu().numpy().flatten()
+    
+    # Count occurrences of each class ID in the mask
+    # bincount handles non-negative integer arrays effectively
+    counts = np.bincount(mask, minlength=len(CLASSES))
+    
+    # Calculate total pixels in the image
+    total_pixels = len(mask)
+    
+    percentages = {}
+    
+    # Generate percentages for each class explicitly defined
+    for class_id, count in enumerate(counts):
+        if class_id in CLASSES:
+            class_name = CLASSES[class_id]
+            # Calculate the percentage, precision to 2 decimals
+            pct = round((count / total_pixels) * 100, 2)
+            percentages[class_name] = pct
+            
+    return percentages

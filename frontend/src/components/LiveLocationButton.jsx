@@ -30,7 +30,7 @@ const LiveLocationButton = ({ onLocationFound }) => {
         <button
             onClick={handleLocate}
             disabled={isLocating}
-            className="group flex items-center gap-3 px-4 py-2.5 bg-space-950/80 backdrop-blur-md border border-white/10 rounded-xl hover:bg-earth-blue/20 hover:border-earth-blue/50 transition-all duration-300 shadow-lg pointer-events-auto"
+            className="group flex items-center gap-3 px-4 py-2 bg-slate-900 rounded-lg hover:bg-earth-blue/20 transition-all duration-300 shadow-xl shadow-black/20 pointer-events-auto h-11"
         >
             {isLocating ? (
                 <Loader2 size={16} className="text-earth-blue animate-spin" />

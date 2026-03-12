@@ -2,3 +2,8 @@ flask
 flask-cors
 Pillow
 numpy
+torch
+torchvision
+opencv-python
+segmentation-models-pytorch
+requests

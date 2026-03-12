@@ -28,8 +28,8 @@ const ChangeView = ({ center, zoom }) => {
 };
 
 const GlobalMap = ({ onLocationSelect, selectedLocation, analysisOverlay, mapType = 'satellite' }) => {
-    // ESRI Tile URLs
-    const satelliteUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    // Google Hybrid Tile URLs (Satellite + Streets)
+    const satelliteUrl = "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
     const streetUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
     const position = [20.5937, 78.9629]; // Geographic center of India
@@ -47,7 +47,7 @@ const GlobalMap = ({ onLocationSelect, selectedLocation, analysisOverlay, mapTyp
                 {/* Layer Switching */}
                 {mapType === 'satellite' ? (
                     <TileLayer
-                        attribution='&copy; ESRI & contributors'
+                        attribution='&copy; Google Maps'
                         url={satelliteUrl}
                     />
                 ) : (
@@ -83,6 +83,7 @@ const GlobalMap = ({ onLocationSelect, selectedLocation, analysisOverlay, mapTyp
                         <div className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-600 shadow-sm shadow-emerald-600/50"></span><span className="text-white/70">Forest</span></div>
                         <div className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-sm bg-amber-500 shadow-sm shadow-amber-500/50"></span><span className="text-white/70">Agriculture</span></div>
                         <div className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-sm bg-slate-400 shadow-sm shadow-slate-400/50"></span><span className="text-white/70">Barren</span></div>
+                        <div className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-sm bg-slate-900 shadow-sm shadow-slate-900/50 border border-white/20"></span><span className="text-white/70">Unclassified</span></div>
                     </div>
                 </div>
             )}

@@ -3,6 +3,7 @@ import GlobalMapComponent from '../components/GlobalMap';
 import LiveLocationButton from '../components/LiveLocationButton';
 import MapLayerToggle from '../components/MapLayerToggle';
 import ResultPanel from '../components/ResultPanel';
+import MapSearchBar from '../components/MapSearchBar';
 import { Globe, MapPin, Activity, Loader2 } from 'lucide-react';
 
 const GlobalMap = () => {
@@ -17,21 +18,26 @@ const GlobalMap = () => {
         setAnalysisResult(null);
 
         try {
-            // Updated to the new modular backend API
-            const response = await fetch('http://127.0.0.1:5000/api/analyze', {
+            // Updated to the new modular backend
+            const response = await fetch('http://localhost:5000/api/analyze', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     latitude: selectedLocation.lat,
-                    longitude: selectedLocation.lng
+                    longitude: selectedLocation.lng,
+                    zoom: 15
                 }),
             });
 
-            if (!response.ok) throw new Error('Analysis Engine unreachable');
-
             const data = await response.json();
+
+            if (!response.ok) {
+                // Return a result object with error so ResultPanel can show it
+                setAnalysisResult({ 
+                    error: data.error || 'The analysis engine encountered a server error. Please try again later.'
+                });
+                return;
+            }
 
             // Calculate a 0.05 degree bounding box around the point
             const d = 0.0125; // Smaller box for higher focus (approx 2.5km)
@@ -49,7 +55,9 @@ const GlobalMap = () => {
             });
         } catch (error) {
             console.error('Analysis failed:', error);
-            alert('MCNN Analysis Engine is offline. Please ensure the backend is running command: python app.py');
+            setAnalysisResult({ 
+                error: 'MCNN Analysis Engine is unreachable. Please ensure the backend is running with "python app.py" on port 5000.'
+            });
         } finally {
             setIsAnalyzing(false);
         }
@@ -57,6 +65,11 @@ const GlobalMap = () => {
 
     const resetAnalysis = () => {
         setAnalysisResult(null);
+    };
+
+    const handleStartOver = () => {
+        setAnalysisResult(null);
+        setSelectedLocation(null);
     };
 
     return (
@@ -72,8 +85,21 @@ const GlobalMap = () => {
 
                 {/* Floating Map Controls - Top Center */}
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[1000] flex gap-4">
+                    <MapSearchBar onLocationFound={setSelectedLocation} />
                     <LiveLocationButton onLocationFound={setSelectedLocation} />
                     <MapLayerToggle currentLayer={mapType} onToggle={setMapType} />
+                    
+                    {/* Start Over Button */}
+                    {(selectedLocation || analysisResult) && (
+                        <button
+                            onClick={handleStartOver}
+                            className="group flex items-center gap-2 px-4 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-500/30 rounded-lg transition-all duration-300 shadow-xl shadow-black/20 pointer-events-auto h-11"
+                        >
+                            <span className="text-[10px] font-bold text-rose-200 uppercase tracking-widest">
+                                Start Over
+                            </span>
+                        </button>
+                    )}
                 </div>
 
                 {/* Floating Sidebar - Right */}
@@ -144,7 +170,7 @@ const GlobalMap = () => {
                                 </p>
                             </div>
                         ) : (
-                            <ResultPanel result={analysisResult} onReset={resetAnalysis} />
+                            <ResultPanel result={analysisResult} onReset={handleStartOver} />
                         )}
                     </div>
                 </div>

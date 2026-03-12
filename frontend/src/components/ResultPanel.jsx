@@ -4,37 +4,65 @@ import { Activity, ShieldCheck, PieChart, Info, Trash2, Download } from 'lucide-
 const ResultPanel = ({ result, onReset }) => {
     if (!result) return null;
 
+    if (result.error) {
+        return (
+            <div className="glass-panel p-6 rounded-3xl border border-rose-500/30 bg-rose-500/5 animate-scale-in flex flex-col items-center justify-center text-center h-full">
+                <div className="p-3 bg-rose-500/20 rounded-xl mb-4">
+                    <Activity className="text-rose-400" size={24} />
+                </div>
+                <h3 className="text-white font-black text-sm uppercase tracking-[0.2em] mb-3">Analysis Error</h3>
+                <p className="text-white/60 text-xs leading-relaxed mb-6">{result.error}</p>
+                <button
+                    onClick={onReset}
+                    className="px-6 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"
+                >
+                    Try Another Area
+                </button>
+            </div>
+        );
+    }
+
+    const isUnclassified = result.dominant_class === "Unclassified/Ocean" || result.confidence < 5;
+
     const stats = [
-        { label: 'Forest', val: result.statistics.Forest, color: 'bg-emerald-600' },
-        { label: 'Urban', val: result.statistics.Urban, color: 'bg-rose-500' },
-        { label: 'Water', val: result.statistics.Water, color: 'bg-blue-500' },
-        { label: 'Agriculture', val: result.statistics.Agriculture, color: 'bg-amber-500' },
-        { label: 'Barren', val: result.statistics.Barren, color: 'bg-slate-400' }
+        { label: 'Forest', val: result.statistics?.Forest || 0, color: 'bg-emerald-600' },
+        { label: 'Urban', val: result.statistics?.Urban || 0, color: 'bg-rose-500' },
+        { label: 'Water', val: result.statistics?.Water || 0, color: 'bg-blue-500' },
+        { label: 'Agriculture', val: result.statistics?.Agriculture || 0, color: 'bg-amber-500' },
+        { label: 'Barren', val: result.statistics?.Barren || 0, color: 'bg-slate-400' },
+        { label: 'Unclassified', val: result.statistics?.['Unclassified/Ocean'] || 0, color: 'bg-slate-900' }
     ];
 
     return (
-        <div className="glass-panel p-6 rounded-3xl border border-emerald-500/30 bg-emerald-500/5 animate-scale-in flex flex-col h-full">
+        <div className={`glass-panel p-6 rounded-3xl border ${isUnclassified ? 'border-amber-500/30 bg-amber-500/5' : 'border-emerald-500/30 bg-emerald-500/5'} animate-scale-in flex flex-col h-full`}>
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-emerald-500/20 rounded-xl">
-                        <Activity className="text-emerald-400" size={18} />
+                    <div className={`p-2.5 ${isUnclassified ? 'bg-amber-500/20' : 'bg-emerald-500/20'} rounded-xl`}>
+                        <Activity className={isUnclassified ? 'text-amber-400' : 'text-emerald-400'} size={18} />
                     </div>
                     <h3 className="text-white font-black text-xs uppercase tracking-[0.2em]">Inference Report</h3>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
-                    <ShieldCheck size={12} className="text-emerald-400" />
+                    <ShieldCheck size={12} className={isUnclassified ? 'text-amber-400' : 'text-emerald-400'} />
                     <span className="text-[10px] font-bold text-white/70">{result.confidence}%</span>
                 </div>
             </div>
 
-            <div className="space-y-6 flex-grow">
+            <div className="space-y-6 flex-grow overflow-y-auto pr-1">
                 {/* Highlight Card */}
                 <div className="p-5 bg-white/5 rounded-2xl border border-white/5 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                         <PieChart size={48} className="text-white" />
                     </div>
                     <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold block mb-1">Dominant Class</span>
-                    <span className="text-2xl font-black text-white tracking-tight">{result.dominant_class}</span>
+                    <span className={`text-2xl font-black ${isUnclassified ? 'text-amber-200' : 'text-white'} tracking-tight`}>
+                        {isUnclassified ? "Low Confidence Area" : result.dominant_class}
+                    </span>
+                    {isUnclassified && (
+                        <p className="text-[9px] text-amber-500/60 uppercase tracking-widest mt-2 font-bold">
+                            Model weights missing or area unclassified
+                        </p>
+                    )}
                 </div>
 
                 {/* Statistics List */}

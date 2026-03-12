@@ -8,7 +8,6 @@ const Navbar = () => {
 
     const navItems = [
         { name: 'Home', path: '/', icon: <Satellite size={18} /> },
-        { name: 'Dataset', path: '/dataset', icon: <Layers size={18} /> },
         { name: 'Classify', path: '/classify', icon: <Upload size={18} /> },
         { name: 'Global Map', path: '/map', icon: <Globe size={18} /> },
         { name: 'About', path: '/about', icon: <Info size={18} /> },

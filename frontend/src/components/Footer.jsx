@@ -23,7 +23,6 @@ const Footer = () => {
                     <div>
                         <h4 className="text-black font-bold text-xs uppercase tracking-widest mb-6 border-b border-slate-200 pb-2 inline-block">Resources</h4>
                         <ul className="space-y-4">
-                            <li><Link to="/dataset" className="text-slate-500 hover:text-black text-sm transition-colors">Satellite Dataset</Link></li>
                             <li><Link to="/classify" className="text-slate-500 hover:text-black text-sm transition-colors">Classification Tool</Link></li>
                             <li><Link to="/results" className="text-slate-500 hover:text-black text-sm transition-colors">Research Results</Link></li>
                         </ul>
